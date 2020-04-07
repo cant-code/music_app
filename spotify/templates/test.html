@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Test Site</title>
+</head>
+<body>
+  <h1>Test Site</h1>
+</body>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+  <script>
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      const token = '{{ data.access_token }}';
+      const player = new Spotify.Player({
+        name: 'My Spotify Web Player',
+        getOAuthToken: cb => { cb(token); }
+      });
+      player.connect();
+    };
+  </script>
+</html>
