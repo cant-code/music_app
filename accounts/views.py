@@ -4,8 +4,20 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 from . import forms
+from django.contrib.auth.models import User
+from rest_framework import viewsets, permissions
+from .serializers import UserSerializer
 # Create your views here.
-User = get_user_model()
+# User = get_user_model()
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class SignUp(CreateView):

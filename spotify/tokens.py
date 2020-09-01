@@ -4,7 +4,6 @@ import os
 import base64
 import six
 import requests
-
 from spotify.models import SpotifyData
 
 spotipy_client_id = os.environ.get('spotipy_client_id')
@@ -45,8 +44,14 @@ def _save_token_info(user, token_info, user_id):
         print('success')
 
 
-def get_user(token):
+def _get_header(token):
     header = {"Authorization": "Bearer {0}".format(token['access_token'])}
+    return header
+
+
+def get_user(token):
+    # header = {"Authorization": "Bearer {0}".format(token['access_token'])}
+    header = _get_header(token)
     response = requests.get('https://api.spotify.com/v1/me', headers=header)
     items = response.json()
     return items.get('id')

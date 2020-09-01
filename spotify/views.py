@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from spotify.tokens import authenticate, Token
+from spotify.api_calls import Playback
 from spotify.models import SpotifyData
 # Create your views here.
 
@@ -43,3 +45,19 @@ class MusicPlayer(LoginRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context['data'] = self.data
         return context
+
+
+def play(request):
+    token = Token()
+    player = Playback()
+    data = token.refresh_access_token(request.user)
+    player.start_playback(data)
+    return HttpResponse('OK', status=200)
+
+
+def pause(request):
+    token = Token()
+    player = Playback()
+    data = token.refresh_access_token(request.user)
+    player.pause_playback(data)
+    return HttpResponse('OK', status=200)
