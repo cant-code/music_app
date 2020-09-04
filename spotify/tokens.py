@@ -2,9 +2,9 @@ import time
 import spotipy.oauth2 as oauth2
 import os
 import base64
-import six
 import requests
 from spotify.models import SpotifyData
+from urllib import parse
 
 spotipy_client_id = os.environ.get('spotipy_client_id')
 spotipy_client_secret = os.environ.get('spotipy_client_secret')
@@ -18,7 +18,7 @@ def authenticate(user, response):
 
 
 def _make_authorization_headers(client_id, client_secret):
-    auth_header = base64.b64encode(six.text_type(client_id + ":" + client_secret).encode("ascii"))
+    auth_header = base64.b64encode((client_id + ":" + client_secret).encode("ascii"))
     return {"Authorization": "Basic %s" % auth_header.decode("ascii")}
 
 
@@ -59,9 +59,10 @@ def get_user(token):
 
 class Token:
     OAUTH_TOKEN_URL = "https://accounts.spotify.com/api/token"
+    OAUTH_AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
 
     def __init__(self):
-        self.scope = 'streaming, user-read-email, user-read-private, user-top-read'
+        self.scope = 'streaming, user-read-private, user-top-read'
         self.token = None
         self.cache_path = None
         self.sp_oauth = None
@@ -72,29 +73,38 @@ class Token:
 
     def get_token(self, user):
         self.user = user
-        self.token = self.prompt_for_user_token(client_id=spotipy_client_id,
-                                                client_secret=spotipy_client_secret,
-                                                redirect_uri=spotipy_redirect_uri)
+        self.token = self.prompt_for_user_token()
         return self.token
 
-    def prompt_for_user_token(self, client_id=None, client_secret=None, redirect_uri=None,
-                              cache_path=None):
+    def prompt_for_user_token(self, cache_path=None):
         if self.user.spotifydata.exists():
             self.cache_path = cache_path or ".cache-" + self.user.spotifydata.sp_name
         else:
             self.cache_path = cache_path
-        self.sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri,
-                                            scope=self.scope, cache_path=self.cache_path)
         self.token_info = self.get_cached_token()
         if not self.token_info:
-            auth_url = self.sp_oauth.get_authorize_url()
+            auth_url = self.get_authorize_url()
             data = {
-                "oauth": self.sp_oauth,
                 "auth_url": auth_url
             }
             return data
         else:
             return self.token_info
+
+    def get_authorize_url(self, state=None):
+        payload = {
+            "client_id": spotipy_client_id,
+            "response_type": "code",
+            "redirect_uri": spotipy_redirect_uri,
+        }
+        if self.scope:
+            payload["scope"] = self.scope
+        if state is None:
+            state = self.state
+        if state is not None:
+            payload["state"] = state
+        urlparams = parse.urlencode(payload)
+        return "%s?%s" % (self.OAUTH_AUTHORIZE_URL, urlparams)
 
     def get_cached_token(self):
         token_info = None
@@ -159,9 +169,7 @@ class Token:
             "refresh_token": refresh_token,
             "grant_type": "refresh_token",
         }
-
         headers = _make_authorization_headers(spotipy_client_id, spotipy_client_secret)
-
         response = requests.post(
             self.OAUTH_TOKEN_URL,
             data=payload,

@@ -1,28 +1,45 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from . import serializers
+from rest_framework import status
 from spotify.tokens import authenticate, Token
 from spotify.api_calls import Playback
 from spotify.models import SpotifyData
 # Create your views here.
 
 
-class GetToken(LoginRequiredMixin, generic.RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse('home')
+class SpotifyDataView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        try:
+            data = SpotifyData.objects.get(pk=self.request.user.pk)
+        except SpotifyData.DoesNotExist:
+            raise Http404
+        serializer = serializers.SpotifySerializer(data)
+        return Response(serializer.data)
+
+
+class GetToken(RetrieveUpdateAPIView, generic.View):
+    serializer_class = serializers.UserDetailsSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         try:
             token = Token()
             data = token.get_token(self.request.user)
             if 'auth_url' in data:
-                return redirect(data['auth_url'])
+                return HttpResponse(data['auth_url'], status=200)
         except:
-            messages.warning(self.request, 'User already exists')
-        return super().get(request, *args, **kwargs)
+            return HttpResponse('User already exists', status=409)
 
 
 class DefineToken(LoginRequiredMixin, generic.RedirectView):
