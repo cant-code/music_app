@@ -7,6 +7,7 @@ app_name = 'spotify'
 urlpatterns = [
     path('gettoken/', views.GetToken.as_view(), name='get_token'),
     path('auth/', views.DefineToken.as_view(), name='auth'),
+    path('get_data', views.SpotifyDataView.as_view(), name='get_data'),
     path('player/', views.MusicPlayer.as_view(), name='player'),
     path('player/play/', views.play),
     path('player/pause/', views.pause)

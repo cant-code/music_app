@@ -18,7 +18,7 @@
           <v-list-item-title class="title">Home</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link to="/settings" active-class="primary">
+      <v-list-item link to="/settings" active-class="primary" v-if="!this.$store.getters['spotify/getDetails']">
         <v-list-item-icon>
           <v-icon dark>mdi-hammer-wrench</v-icon>
         </v-list-item-icon>

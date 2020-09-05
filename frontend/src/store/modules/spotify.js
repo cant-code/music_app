@@ -1,5 +1,3 @@
-import Axios from 'axios'
-
 const state = {
     spot_Username: localStorage.getItem('spot_Username') || '',
     token: localStorage.getItem('token') || '',
@@ -26,30 +24,27 @@ const mutations = {
         state.expires = data.expires;
         state.category = data.category;
     },
-    SET_TOKEN(state, token) {
-        state.token = token;
-    }
+    SET_TOKEN(state, data) {
+        state.token = data.token;
+        state.refresh_token = data.refresh_token;
+        state.expires = data.expires;
+    },
 };
 
 const actions = {
-    // eslint-disable-next-line no-unused-vars
-    async getDetails({ commit }, data) {
-        try {
-            await Axios.post('http://localhost:8000/dj-rest-auth/registration/', {
-                username: data.username,
-                password1: data.password,
-                password2: data.password2,
-                email: data.email
-            });
-        } catch (error) {
-            console.log(error);
-        }
+    async saveData({ dispatch }, data) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+        localStorage.setItem('expires', data.expires);
+        localStorage.setItem('spot_Username', data.username);
+        localStorage.setItem('category', data.category);
+        dispatch('setDetails', data);
     },
     setDetails({ commit }, data) {
         commit("SET_DATA", data);
     },
-    setToken({ commit }, token) {
-        commit("SET_TOKEN", token);
+    setToken({ commit }, data) {
+        commit("SET_TOKEN", data);
     }
 };
 

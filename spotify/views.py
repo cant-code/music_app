@@ -10,9 +10,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from . import serializers
 from rest_framework import status
-from spotify.tokens import authenticate, Token
+from spotify.tokens import Token
 from spotify.api_calls import Playback
 from spotify.models import SpotifyData
+import json
 # Create your views here.
 
 
@@ -34,22 +35,23 @@ class GetToken(RetrieveUpdateAPIView, generic.View):
 
     def get(self, request, *args, **kwargs):
         try:
-            token = Token()
-            data = token.get_token(self.request.user)
+            token = Token(self.request.user)
+            data = token.prompt_for_user_token()
             if 'auth_url' in data:
                 return HttpResponse(data['auth_url'], status=200)
         except:
             return HttpResponse('User already exists', status=409)
 
 
-class DefineToken(LoginRequiredMixin, generic.RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse('accounts:acc_mgr')
+class DefineToken(RetrieveUpdateAPIView, generic.View):
+    serializer_class = serializers.SpotifySerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        url = request.get_full_path()
-        authenticate(self.request.user, url)
-        return redirect('accounts:acc_mgr')
+        token = Token(self.request.user)
+        token_info = token.get_access_token(code=request.query_params.get('code'))
+        token_info = json.dumps(token_info)
+        return HttpResponse(token_info, status=200)
 
 
 class MusicPlayer(LoginRequiredMixin, generic.ListView):
@@ -57,8 +59,8 @@ class MusicPlayer(LoginRequiredMixin, generic.ListView):
     model = SpotifyData
 
     def get_context_data(self, **kwargs):
-        token = Token()
-        self.data = token.refresh_access_token(self.request.user)
+        token = Token(user=self.request.user)
+        self.data = token.refresh_access_token()
         context = super().get_context_data(**kwargs)
         context['data'] = self.data
         return context

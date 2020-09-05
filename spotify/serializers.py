@@ -7,7 +7,7 @@ UserModel = get_user_model()
 class SpotifySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SpotifyData
-        fields = ['sp_name', 'access_token', 'token_type', 'expires_in', 'refresh_token', 'expires_at']
+        fields = ['sp_name', 'access_token', 'refresh_token', 'expires_at', 'category']
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):

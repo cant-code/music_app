@@ -57,8 +57,7 @@ const actions = {
             });
             dispatch('setUsername', '');
             dispatch('setUserToken', '');
-            localStorage.removeItem('userToken');
-            localStorage.removeItem('username');
+            localStorage.clear();
         } catch (error) {
             console.log(error);
         }

@@ -24,11 +24,10 @@ let previousUrl = null;
 let name = 'Spotify';
 export default {
   methods: {
-      async openSignInWindow () {
-        await Axios.get('http://localhost:8000/spotify/gettoken/', {
+      openSignInWindow () {
+        Axios.get('http://localhost:8000/spotify/gettoken/', {
           headers: { 'Authorization': ' Token '+this.$store.getters["auth/getUserToken"]}
         }).then((url) => {
-          console.log(url);
           window.removeEventListener('message', this.receiveMessage);
           const strWindowFeatures = 'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
           if (windowObjectReference === null || windowObjectReference.closed) {
@@ -43,15 +42,25 @@ export default {
           previousUrl = url;
         });
       },
-      receiveMessage(event) {
-        const { data } = event;
-        console.log(data);
-        if (data.source === 'lma-login-redirect') {
-          const { payload } = data;
-          console.log(payload);
-          // const redirectUrl = `/auth/google/login${payload}`;
-          // console.log(redirectUrl);
-          // window.location.pathname = redirectUrl;
+      async receiveMessage(event) {
+        if (event.data) {
+          if (event.data.startsWith('?code')) {
+            const {data} = event;
+            let code = data.split("?code=")[1].split("&")[0]
+            await Axios.get('http://localhost:8000/spotify/auth/', {
+              params: {code: code},
+              headers: {'Authorization': ' Token ' + this.$store.getters["auth/getUserToken"]}
+            }).then(({data}) => {
+              const params = {
+                "token": data.access_token,
+                "refresh_token": data.refresh_token,
+                "expires": data.expires_at,
+                "username": data.user.id,
+                "category": data.user.product
+              };
+              this.$store.dispatch("spotify/saveData", params).then(() => this.$router.push('/'));
+            });
+          }
         }
       }
   },
