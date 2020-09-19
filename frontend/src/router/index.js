@@ -5,6 +5,7 @@ import Home from '../views/Home.vue'
 const formsView = () => import('@/views/Forms')
 const settings = () => import('@/components/Settings')
 const Landing = () => import('@/components/LandingPage')
+const playlist = () => import('@/components/Browse/playlist')
 
 Vue.use(VueRouter)
 
@@ -42,6 +43,11 @@ const routes = [
     path: '/landing',
     name: 'Landing',
     component: Landing
+  },
+  {
+    path: '/genres/:id',
+    name: 'genres',
+    component: playlist
   }
 ]
 

@@ -4,6 +4,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
+from rest_framework.decorators import permission_classes
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -17,20 +18,19 @@ import json
 # Create your views here.
 
 
-class SpotifyDataView(APIView):
+class SpotifyDataView(RetrieveUpdateAPIView, generic.View):
     permission_classes = (IsAuthenticated,)
 
-    def get_object(self):
+    def get(self, request, *args, **kwargs):
         try:
-            data = SpotifyData.objects.get(pk=self.request.user.pk)
+            data = SpotifyData.objects.get(user=self.request.user)
         except SpotifyData.DoesNotExist:
-            raise Http404
+            return HttpResponse('User not found', status=404)
         serializer = serializers.SpotifySerializer(data)
         return Response(serializer.data)
 
 
 class GetToken(RetrieveUpdateAPIView, generic.View):
-    serializer_class = serializers.UserDetailsSerializer
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
@@ -50,6 +50,22 @@ class DefineToken(RetrieveUpdateAPIView, generic.View):
     def get(self, request, *args, **kwargs):
         token = Token(self.request.user)
         token_info = token.get_access_token(code=request.query_params.get('code'))
+        # if token_info.status_code:
+        #     if token_info.status_code != 200:
+        #         return HttpResponse(token_info, status=token_info.status_code)
+        token_info = json.dumps(token_info)
+        return HttpResponse(token_info, status=200)
+
+
+class RefreshToken(RetrieveUpdateAPIView, generic.View):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        token = Token(self.request.user)
+        token_info = token.refresh_access_token()
+        # if token_info.status_code:
+        #     if token_info.status_code != 200:
+        #         return HttpResponse(token_info, status=token_info.status_code)
         token_info = json.dumps(token_info)
         return HttpResponse(token_info, status=200)
 
@@ -66,17 +82,29 @@ class MusicPlayer(LoginRequiredMixin, generic.ListView):
         return context
 
 
+class PlayPause(APIView, generic.View):
+    permission_classes(IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        player = Playback(user=self.request.user)
+        param = request.GET.get('type')
+        device = request.GET.get('device_id')
+        if param == 'play':
+            player.start_playback(device)
+        else:
+            player.pause_playback()
+        return HttpResponse('OK', status=200)
+
+
+@permission_classes([IsAuthenticated])
 def play(request):
-    token = Token()
-    player = Playback()
-    data = token.refresh_access_token(request.user)
-    player.start_playback(data)
+    player = Playback(user=self.request.user)
+    player.start_playback(request.user)
     return HttpResponse('OK', status=200)
 
 
+@permission_classes([IsAuthenticated])
 def pause(request):
-    token = Token()
     player = Playback()
-    data = token.refresh_access_token(request.user)
-    player.pause_playback(data)
+    player.pause_playback(request.user)
     return HttpResponse('OK', status=200)

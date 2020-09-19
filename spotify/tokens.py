@@ -44,7 +44,7 @@ class Token:
     OAUTH_AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
 
     def __init__(self, user=None):
-        self.scope = 'streaming, user-read-private, user-top-read'
+        self.scope = 'streaming, user-read-email, user-read-private, user-top-read, user-modify-playback-state'
         self.token = None
         self.token_info = None
         self.code = None
@@ -115,10 +115,11 @@ class Token:
         except:
             pass
         token_info['user'] = user_id
+        token_info['status_code'] = response.status_code
         return token_info
 
     def _add_custom_values_to_token_info(self, token_info):
-        token_info["expires_at"] = int(time.time()*1000) + token_info["expires_in"]
+        token_info["expires_at"] = (int(time.time()) + token_info["expires_in"])*1000
         token_info["scope"] = self.scope
         return token_info
 
@@ -141,6 +142,7 @@ class Token:
             return response
         token_info = response.json()
         token_info = self._add_custom_values_to_token_info(token_info)
+        token_info['status_code'] = response.status_code
         if "refresh_token" not in token_info:
             token_info["refresh_token"] = refresh_token
         data.access_token = token_info['access_token']

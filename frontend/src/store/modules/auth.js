@@ -46,6 +46,17 @@ const actions = {
                 headers: { 'Authorization': ' Token '+Token}});
             dispatch('setUsername', response2.data.username);
             localStorage.setItem('username', response2.data.username);
+            Axios.get('http://localhost:8000/spotify/get_data/', {
+                headers: { 'Authorization': ' Token '+Token}}).then(async ({data}) => {
+                const params = {
+                    "token": data.access_token,
+                    "refresh_token": data.refresh_token,
+                    "expires": data.expires_at,
+                    "username": data.sp_name,
+                    "category": data.category
+                };
+                await dispatch("spotify/saveData", params, {root: true});
+            });
         } catch (error) {
             console.log(error);
         }
