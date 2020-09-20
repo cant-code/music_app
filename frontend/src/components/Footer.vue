@@ -3,8 +3,8 @@
     <v-row>
       <v-col class="py-0">
         <v-card>
-          <v-slider :value="songInfo.pos" :max="songInfo.duration" :disabled="seekDisabled"
-                    class="ma-0 pa-0" height="1" thumb-label hide-details>
+          <v-slider :value="value" v-model="value" :max="this.songInfo.duration" :disabled="seekDisabled"
+                    class="ma-0 pa-0" height="1" thumb-label hide-details @mouseup="seekToPos">
             <template v-slot:thumb-label="{ value }">
               {{ millisToMinutesAndSeconds(value) }}
             </template>
@@ -40,14 +40,15 @@
               </v-list-item-icon>
             </v-col>
             <v-col cols=4 class="py-0 text-center">
-              <v-speed-dial direction="top" :open-on-hover=true transition="slide-y-reverse-transition">
-                <template v-slot:activator>
-                  <v-btn dark icon>
+              <v-menu top offset-y :min-width="100" nudge-left="30">
+                <template #activator="{ on, attrs }">
+                  <v-btn icon @click="show=!show" v-bind="attrs" v-on="on">
                     <v-icon>mdi-volume-high</v-icon>
                   </v-btn>
                 </template>
-                <v-slider v-model="volume" :disabled="seekDisabled" :vertical=true :min=0 :max=100 thumb-label/>
-              </v-speed-dial>
+                <v-slider v-model="volume" :disabled="seekDisabled" :vertical=true :min=0 :max=100
+                          thumb-label @mouseup="changeVol"/>
+              </v-menu>
             </v-col>
           </v-row>
         </v-card>
@@ -60,6 +61,9 @@
 export default {
   data() {
     return {
+      show: false,
+      value: 0,
+      interval: 0,
       volume: 100,
       play: true,
       seekDisabled: true,
@@ -67,10 +71,18 @@ export default {
         name: null,
         artists: null,
         image: null,
-        pos: 0,
         duration: 100,
       },
     }
+  },
+  watch: {
+    value (val) {
+      if ((val < this.songInfo.duration) && (!this.play)) return;
+      else if(val> this.songInfo.duration) {
+        this.value = 0;
+        clearInterval(this.interval);
+      }
+    },
   },
   mounted() {
     if(this.$store.getters["spotify/getDetails"]) {
@@ -86,15 +98,29 @@ export default {
     }
   },
   methods: {
+    changeVol() {
+      this.$axios.put('me/player/volume?volume_percent='+this.volume).then(() => {console.log('Volume Changed')});
+    },
+    seekToPos() {
+      this.$axios.put('me/player/seek?position_ms='+this.value).then(() => {console.log('Seeked playback')});
+    },
+    startBuffer () {
+      clearInterval(this.interval)
+      this.interval = setInterval(() => {
+        this.value += 1000
+      }, 1000)
+    },
     playback() {
       if(this.play) {
         this.play = !this.play;
+        this.startBuffer();
         console.log('Changed', this.$store.getters["spotify/getDeviceID"]);
         this.$axios.put('me/player/play?device_id='+this.$store.getters["spotify/getDeviceID"])
             .then(() => {console.log('Playing');});
       }
       else {
         this.play = !this.play;
+        clearInterval(this.interval);
         console.log('Changed', this.$store.getters["spotify/getDeviceID"]);
         this.$axios.put('me/player/pause').then(() => {console.log('Paused');});
       }
@@ -129,6 +155,7 @@ export default {
           }).join(', ');
           this.songInfo.image = current_track.album.images[0].url || null;
           this.songInfo.duration = current_track.duration_ms;
+          this.startBuffer();
         }
         this.play = paused;
       });

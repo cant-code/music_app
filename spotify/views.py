@@ -18,7 +18,7 @@ import json
 # Create your views here.
 
 
-class SpotifyDataView(RetrieveUpdateAPIView, generic.View):
+class SpotifyDataView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
@@ -30,7 +30,7 @@ class SpotifyDataView(RetrieveUpdateAPIView, generic.View):
         return Response(serializer.data)
 
 
-class GetToken(RetrieveUpdateAPIView, generic.View):
+class GetToken(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
@@ -43,7 +43,7 @@ class GetToken(RetrieveUpdateAPIView, generic.View):
             return HttpResponse('User already exists', status=409)
 
 
-class DefineToken(RetrieveUpdateAPIView, generic.View):
+class DefineToken(RetrieveUpdateAPIView):
     serializer_class = serializers.SpotifySerializer
     permission_classes = (IsAuthenticated,)
 
@@ -57,7 +57,7 @@ class DefineToken(RetrieveUpdateAPIView, generic.View):
         return HttpResponse(token_info, status=200)
 
 
-class RefreshToken(RetrieveUpdateAPIView, generic.View):
+class RefreshToken(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
