@@ -25,7 +25,7 @@ let name = 'Spotify';
 export default {
   methods: {
       openSignInWindow () {
-        Axios.get('http://localhost:8000/spotify/gettoken/', {
+        Axios.get('/spotify/gettoken/', {
           headers: { 'Authorization': ' Token '+this.$store.getters["auth/getUserToken"]}
         }).then((url) => {
           window.removeEventListener('message', this.receiveMessage);
@@ -47,7 +47,7 @@ export default {
           if (event.data.startsWith('?code')) {
             const {data} = event;
             let code = data.split("?code=")[1].split("&")[0]
-            await Axios.get('http://localhost:8000/spotify/auth/', {
+            await Axios.get('/spotify/auth/', {
               params: {code: code},
               headers: {'Authorization': ' Token ' + this.$store.getters["auth/getUserToken"]}
             }).then(({data}) => {

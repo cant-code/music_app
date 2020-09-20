@@ -23,7 +23,7 @@ const actions = {
     // eslint-disable-next-line no-unused-vars
     async registerUser({ commit }, data) {
         try {
-               await Axios.post('http://localhost:8000/dj-rest-auth/registration/', {
+               await Axios.post('/dj-rest-auth/registration/', {
                     username: data.username,
                     password1: data.password,
                     password2: data.password2,
@@ -35,18 +35,18 @@ const actions = {
     },
     async loginUser({ dispatch }, data) {
         try {
-            const response = await Axios.post('http://localhost:8000/dj-rest-auth/login/', {
+            const response = await Axios.post('/dj-rest-auth/login/', {
                 username: data.username,
                 password: data.password
             });
             dispatch('setUserToken', response.data.key);
             localStorage.setItem('userToken', response.data.key);
             const Token = response.data.key;
-            const response2 = await Axios.get('http://localhost:8000/dj-rest-auth/user/', {
+            const response2 = await Axios.get('/dj-rest-auth/user/', {
                 headers: { 'Authorization': ' Token '+Token}});
             dispatch('setUsername', response2.data.username);
             localStorage.setItem('username', response2.data.username);
-            Axios.get('http://localhost:8000/spotify/get_data/', {
+            Axios.get('/spotify/get_data/', {
                 headers: { 'Authorization': ' Token '+Token}}).then(async ({data}) => {
                 const params = {
                     "token": data.access_token,
@@ -63,7 +63,7 @@ const actions = {
     },
     async logoutUser({ dispatch }) {
         try {
-            await Axios.post('http://localhost:8000/dj-rest-auth/logout/', null, {
+            await Axios.post('/dj-rest-auth/logout/', null, {
                 headers: { 'Authorization': ' Token '+state.userToken}
             });
             dispatch('setUsername', '');

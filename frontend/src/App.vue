@@ -14,7 +14,7 @@ import foot from '@/components/Footer';
 import {get} from "axios";
 export default {
   async beforeCreate() {
-    const response = await get('http://localhost:8000/get-token/');
+    const response = await get('/get-token/');
     document.cookie = "csrftoken=" + response.data.token;
   },
   computed: {

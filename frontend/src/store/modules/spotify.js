@@ -41,7 +41,7 @@ const mutations = {
 
 const actions = {
     async refreshToken({dispatch, rootGetters}){
-        await Axios.get('http://localhost:8000/spotify/refresh_token/', {
+        await Axios.get('/spotify/refresh_token/', {
             headers: {'Authorization': ' Token ' + rootGetters["auth/getUserToken"] }
         }).then(({data}) => {
             console.log(data);
