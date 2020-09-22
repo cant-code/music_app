@@ -3,7 +3,7 @@
     <v-row justify="center" align="center">
       <v-col cols="10" sm="8" md="6" lg="5">
         <v-card elevation="12" class="pb-12 px-12 pt-6" light>
-          <v-img class="mb-6" src="@/assets/img2.png" contain eager max-height="240px"/>
+          <h1 class="text-h1 text-center mb-3">Sign Up</h1>
           <v-form ref="form">
             <v-text-field :rules="[rules.required, rules.nameRule]" label="Username" :outlined=true v-model="name"
                           :rounded=true :clearable=true prepend-inner-icon="mdi-account-music"/>
@@ -20,6 +20,9 @@
                           v-model="password2" @click:append="show2 = !show2"
                           :rounded=true :clearable=true :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                           prepend-inner-icon="mdi-key-variant"/>
+            <div v-if="message" class="error--text text-center mb-2">
+              {{ message }}
+            </div>
             <div class="text-center">
               <v-btn type="submit" rounded large color="primary" @click="validate" min-width="150">Signup</v-btn>
             </div>
@@ -53,7 +56,8 @@ export default {
     password2: '',
     email: '',
     show: false,
-    show2: false
+    show2: false,
+    message: null
   }),
   computed: {
     passComp() { return () => (this.password === this.password2) || 'Password doesnt match'; }
@@ -67,7 +71,7 @@ export default {
           password: this.password,
           password2: this.password2,
           email: this.email
-        }).then(() => {this.$router.push('/login');});
+        }).then(() => {this.$router.push('/login');}).catch(e => this.message = e.message);
       }
     }
   }

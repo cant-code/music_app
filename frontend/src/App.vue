@@ -4,22 +4,20 @@
     <v-main>
       <router-view/>
     </v-main>
-    <foot v-if="test"/>
+    <foot v-if="spotify"/>
   </v-app>
 </template>
 
 <script>
 import navDrawer from '@/components/Nav-Drawer';
 import foot from '@/components/Footer';
-// import {get} from "axios";
 export default {
-  // async beforeCreate() {
-  //   const response = await get('/get-token/');
-  //   document.cookie = "csrftoken=" + response.data.token;
-  // },
   computed: {
     test() {
       return this.$store.getters["auth/getUserToken"];
+    },
+    spotify() {
+      return this.$store.getters['spotify/getToken'].token;
     }
   },
   components: {

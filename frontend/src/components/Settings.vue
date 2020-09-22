@@ -19,6 +19,8 @@
 
 <script>
 import Axios from "axios";
+Axios.defaults.xsrfCookieName = 'csrftoken'
+Axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 let windowObjectReference = null;
 let previousUrl = null;
 let name = 'Spotify';

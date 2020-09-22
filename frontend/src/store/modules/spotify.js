@@ -1,4 +1,6 @@
 import Axios from "axios";
+Axios.defaults.xsrfCookieName = 'csrftoken'
+Axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 const state = {
     spot_Username: localStorage.getItem('spot_Username') || '',

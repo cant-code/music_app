@@ -73,6 +73,7 @@ export default {
         image: null,
         duration: 100,
       },
+      player: null,
     }
   },
   watch: {
@@ -96,6 +97,9 @@ export default {
         this.playerConnect();
       }
     }
+  },
+  beforeDestroy() {
+    this.player.disconnect();
   },
   methods: {
     changeVol() {
@@ -128,20 +132,20 @@ export default {
     playerConnect() {
       const token = this.$store.getters["spotify/getToken"];
       // eslint-disable-next-line no-undef
-      const player = new Spotify.Player({
+      this.player = new Spotify.Player({
         name: 'Music Mixin',
         getOAuthToken: cb => {cb(token.token);}
       });
-      player.addListener('authentication_error', ({message}) => {
+      this.player.addListener('authentication_error', ({message}) => {
         console.error(message);
         this.playerConnect();
       });
-      player.addListener('ready', ({device_id}) => {
+      this.player.addListener('ready', ({device_id}) => {
         console.log('Ready with Device ID', device_id);
         this.$store.dispatch('spotify/setDeviceID', device_id);
       });
-      player.connect();
-      player.addListener('player_state_changed', ({
+      this.player.connect();
+      this.player.addListener('player_state_changed', ({
              track_window: {current_track},
              position,
              paused,
@@ -155,6 +159,7 @@ export default {
           }).join(', ');
           this.songInfo.image = current_track.album.images[0].url || null;
           this.songInfo.duration = current_track.duration_ms;
+          this.value = 0;
           this.startBuffer();
         }
         this.play = paused;

@@ -1,4 +1,6 @@
 import Axios from 'axios'
+Axios.defaults.xsrfCookieName = 'csrftoken'
+Axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 const state = {
     username: localStorage.getItem('username') || '',
@@ -30,7 +32,7 @@ const actions = {
                     email: data.email
                 });
         } catch (error) {
-            console.log(error);
+            throw new Error('Error Occurred, please try again later');
         }
     },
     async loginUser({ dispatch }, data) {
@@ -56,9 +58,9 @@ const actions = {
                     "category": data.category
                 };
                 await dispatch("spotify/saveData", params, {root: true});
-            });
+            }).catch(e => console.log(e));
         } catch (error) {
-            console.log(error);
+            throw new Error('Invalid User, please try again');
         }
     },
     async logoutUser({ dispatch }) {
@@ -68,6 +70,13 @@ const actions = {
             });
             dispatch('setUsername', '');
             dispatch('setUserToken', '');
+            dispatch('spotify/saveData', {
+                'token': '',
+                'refresh_token': '',
+                'expires': '',
+                'username': '',
+                'category': '',
+            }, { root: true });
             localStorage.clear();
         } catch (error) {
             console.log(error);

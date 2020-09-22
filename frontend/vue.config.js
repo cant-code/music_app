@@ -1,6 +1,15 @@
 module.exports = {
   "devServer": {
-    "proxy": "http://localhost:8000"
+    "proxy": {
+      "/dj-rest-auth" : {
+        target: "http://localhost:8000",
+        changeOrigin: true
+      },
+      "/spotify" : {
+        target: "http://localhost:8000",
+        changeOrigin: true
+      }
+    }
   },
   "transpileDependencies": [
     "vuetify"
