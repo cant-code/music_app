@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row v-if="getCategory">
+    <v-row>
       <v-col v-for="(item, index) in categories" :key="index" cols=6 md=3 sm=4>
         <v-card :to="/genres/+item.id">
           <v-img :src="item.images[0].url" class="white--text align-end"
@@ -31,14 +31,8 @@ export default {
       }
     }
   },
-  computed: {
-    getCategory() {
-      if (this.$store.getters['spotify/getDetails'].category) {
-        this.getCategories();
-        return true;
-      }
-      return false;
-    }
-  },
+  created() {
+    this.getCategories();
+  }
 }
 </script>
