@@ -20,9 +20,9 @@
                           v-model="password2" @click:append="show2 = !show2"
                           :rounded=true :clearable=true :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                           prepend-inner-icon="mdi-key-variant"/>
-            <div v-if="message" class="error--text text-center mb-2">
+            <v-alert v-if="message" type="error">
               {{ message }}
-            </div>
+            </v-alert>
             <div class="text-center">
               <v-btn type="submit" rounded large color="primary" @click="validate" min-width="150">Signup</v-btn>
             </div>

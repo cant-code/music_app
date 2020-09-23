@@ -12,12 +12,8 @@ const state = {
 };
 
 const getters = {
-    getDetails: (state) => {
-        return {
-            username: state.spot_Username,
-            category: state.category
-        }
-    },
+    getDetails: (state) => {return {username: state.spot_Username}},
+    getCategory: (state) => {return state.category},
     getExpiry: (state) => {return {expires: state.expires}},
     getToken: (state) => {return {token: state.token}},
     getDeviceID: (state) => {return state.device_id}

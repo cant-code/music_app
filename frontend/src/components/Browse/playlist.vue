@@ -13,7 +13,7 @@
             <div><span>Followers: {{this.followers}}</span></div>
           </div>
           <div>
-            <v-btn class="ma-2" x-large icon color="primary" @click="playlist">
+            <v-btn :disabled="category" class="ma-2" x-large icon color="primary" @click="playlist">
               <v-icon x-large>mdi-play-circle</v-icon>
             </v-btn>
           </div>
@@ -44,6 +44,9 @@ export default {
         return item.track !== null;
       });
     },
+    category() {
+      return this.$store.getters["spotify/getCategory"] === "premium";
+    }
   },
   updated() {
     this.isMore = false;
