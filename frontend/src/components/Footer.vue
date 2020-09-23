@@ -3,7 +3,7 @@
     <v-row>
       <v-col class="py-0">
         <v-card>
-          <v-slider :value="value" v-model="value" :max="this.songInfo.duration" :disabled="seekDisabled || category"
+          <v-slider :value="value" v-model="value" :max="this.songInfo.duration" :disabled="seekDisabled || !category"
                     class="ma-0 pa-0" height="1" thumb-label hide-details @mouseup="seekToPos">
             <template v-slot:thumb-label="{ value }">
               {{ millisToMinutesAndSeconds(value) }}
@@ -23,18 +23,18 @@
             </v-col>
             <v-col cols=4 class="pa-0 text-center">
               <v-list-item-icon :class="{ 'mx-0': $vuetify.breakpoint.smAndDown }">
-                <v-btn icon :disabled="changeTrack.prev || category">
+                <v-btn icon :disabled="!changeTrack.prev || !category" @click="playPrev">
                   <v-icon>mdi-rewind</v-icon>
                 </v-btn>
               </v-list-item-icon>
               <v-list-item-icon :class="{ 'mx-5': $vuetify.breakpoint.mdAndUp, 'mx-0': $vuetify.breakpoint.smAndDown }">
-                <v-btn icon @click="playback" :disabled="category">
+                <v-btn icon @click="playback" :disabled="!category">
                   <v-icon v-if=play >mdi-play</v-icon>
                   <v-icon v-else>mdi-pause</v-icon>
                 </v-btn>
               </v-list-item-icon>
               <v-list-item-icon :class="{ 'ml-8': $vuetify.breakpoint.mdAndUp, 'mx-0': $vuetify.breakpoint.smAndDown }">
-                <v-btn icon :disabled="changeTrack.next || category">
+                <v-btn icon :disabled="!changeTrack.next || !category" @click="playNext">
                   <v-icon>mdi-fast-forward</v-icon>
                 </v-btn>
               </v-list-item-icon>
@@ -46,7 +46,7 @@
                     <v-icon>mdi-volume-high</v-icon>
                   </v-btn>
                 </template>
-                <v-slider v-model="volume" :disabled="seekDisabled || category" :vertical=true :min=0 :max=100
+                <v-slider v-model="volume" :disabled="seekDisabled || !category" :vertical=true :min=0 :max=100
                           thumb-label @mouseup="changeVol"/>
               </v-menu>
             </v-col>
@@ -112,10 +112,10 @@ export default {
   },
   methods: {
     playNext() {
-      this.$axios.put('me/player/next');
+      this.$axios.post('me/player/next');
     },
     playPrev() {
-      this.$axios.put('me/player/previous');
+      this.$axios.post('me/player/previous');
     },
     changeVol() {
       this.$axios.put('me/player/volume?volume_percent='+this.volume);
@@ -156,11 +156,9 @@ export default {
       });
       this.player.connect();
       this.player.addListener('player_state_changed', ({
-             track_window: {current_track},
+             track_window: {current_track, next_tracks, previous_tracks},
              position,
              paused,
-             next_tracks,
-             previous_tracks
            }) => {
         if (position === 0) {
           this.seekDisabled = false;
