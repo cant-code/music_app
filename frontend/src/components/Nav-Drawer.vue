@@ -18,7 +18,7 @@
           <v-list-item-title class="title">Home</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link to="/settings" active-class="primary" v-if="this.$store.getters['spotify/getDetails'].category">
+      <v-list-item link to="/settings" active-class="primary" v-if="!showSettings">
         <v-list-item-icon>
           <v-icon dark>mdi-hammer-wrench</v-icon>
         </v-list-item-icon>
@@ -48,6 +48,9 @@ export default {
   computed: {
     getUser() {
       return this.$store.getters["auth/getUsername"];
+    },
+    showSettings() {
+      return this.$store.getters['spotify/getDetails'].username;
     }
   }
 }
