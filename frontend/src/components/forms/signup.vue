@@ -47,7 +47,7 @@ export default {
     name: '',
     rules: {
       required: v => !!v || 'Field is Required',
-      nameRule: v => (v && v.length >= 6) || 'Username must be atleast 6 characters',
+      nameRule: v => /^[-\w.$@*!]{5,30}$/.test(v) || 'Incorrect Input',
       emailRule: v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       passRule: v => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z_@./#&+-]{8,}$/.test(v)
           || 'Password must be alphanumeric having atleast one Uppercase character',

@@ -16,6 +16,9 @@
             <v-btn :disabled="!category" class="ma-2" x-large icon color="primary" @click="playlist">
               <v-icon x-large>mdi-play-circle</v-icon>
             </v-btn>
+            <v-btn class="ma-2" x-large icon color="primary" @click="likePlaylist">
+              <v-icon x-large>{{ liked }}</v-icon>
+            </v-btn>
           </div>
         </v-col>
       </v-row>
@@ -59,6 +62,7 @@ export default {
       categoryID: null,
       followers: null,
       description: null,
+      liked: null,
       owner: null,
       playlists: {
         limit: 25,
@@ -83,11 +87,24 @@ export default {
           const playlists = response.data.tracks;
           this.playlists.total = playlists.total;
           this.playlists.items.push(...playlists.items);
+          this.$axios.get('/playlists/'+this.categoryID+'/followers/contains?ids='
+              +this.$store.getters["spotify/getDetails"].username).then((response) => {
+              this.liked = response.data[0] ? 'mdi-heart' : 'mdi-heart-outline';
+          });
           this.isMore = false;
         }
       } catch (e) {
         console.log(e);
       }
+    },
+    likePlaylist() {
+      if (this.liked === 'mdi-heart-outline')
+        this.$axios.put('playlists/' + this.categoryID + '/followers', {
+          "public": false
+        }).then(() => this.liked = 'mdi-heart').catch(() => this.liked = 'mdi-heart-outline');
+      else
+        this.$axios.delete('playlists/' + this.categoryID + '/followers')
+            .then(() => this.liked = 'mdi-heart-outline').catch(() => this.liked = 'mdi-heart');
     },
     artists(artistList) {
       return artistList.map((val) => {
@@ -118,7 +135,8 @@ export default {
           type: 'track'
         });
         this.$axios.put('me/player/play?device_id=' + this.$store.getters["spotify/getDeviceID"], {
-          "uris": ["spotify:track:" + clickedId,]
+          "context_uri": "spotify:playlist:"+this.categoryID,
+          "offset": {"uri":"spotify:track:" + clickedId},
         }).then(() => {
           console.log('Playing');
         });
