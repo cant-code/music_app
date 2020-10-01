@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col v-for="(item, index) in categories" :key="index" cols=6 md=3 sm=4>
-        <v-card :to="/genres/+item.id">
+        <v-card :to="/playlists/+item.id">
           <v-img :src="item.images[0].url" class="white--text align-end"
                  gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)">
             <v-card-title v-text="item.name"></v-card-title>

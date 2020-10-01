@@ -38,21 +38,33 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: settings,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/landing',
     name: 'Landing',
-    component: Landing
+    component: Landing,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
-    path: '/genres/:id',
-    name: 'genres',
-    component: playlist
+    path: '/playlists/:id',
+    name: 'playlist',
+    component: playlist,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/search',
     name: 'search',
-    component: () => import('@/components/search')
+    component: () => import('@/components/search'),
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 

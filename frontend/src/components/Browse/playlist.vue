@@ -128,7 +128,6 @@ export default {
     },
     async track(clickedId) {
       try {
-        console.log(clickedId);
         await this.$store.dispatch('player/setData', {
           player: 'spotify',
           id: clickedId,
