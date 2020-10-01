@@ -48,6 +48,11 @@ const routes = [
     path: '/genres/:id',
     name: 'genres',
     component: playlist
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('@/components/search')
   }
 ]
 
