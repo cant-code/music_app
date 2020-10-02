@@ -6,6 +6,7 @@ const formsView = () => import('@/views/Forms')
 const settings = () => import('@/components/Settings')
 const Landing = () => import('@/components/LandingPage')
 const playlist = () => import('@/components/Browse/playlist')
+const album = () => import('@/components/Browse/album')
 
 Vue.use(VueRouter)
 
@@ -65,7 +66,15 @@ const routes = [
     meta: {
       requiresAuth: true
     }
-  }
+  },
+  {
+    path: '/albums/:id',
+    name: 'album',
+    component: album,
+    meta: {
+      requiresAuth: true
+    }
+  },
 ]
 
 const router = new VueRouter({

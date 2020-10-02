@@ -8,7 +8,7 @@
       <v-sheet class="mx-auto" elevation="8">
         <v-slide-group class="pa-4" v-if="albums.total > 0">
           <v-slide-item v-for="item in albums.items" :key="item.id">
-            <v-card class="ma-2" width="250px" height="250px">
+            <v-card class="ma-2" width="250px" height="250px" :to="/albums/+item.id">
               <v-img :src="item.images[0].url" v-if="item.images[0].url" class="white--text align-end"
                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)">
                 <v-card-title v-text="item.name"></v-card-title>
