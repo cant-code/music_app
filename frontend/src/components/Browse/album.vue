@@ -9,14 +9,14 @@
         <v-col>
           <div>
             <h1>{{ this.name }}</h1>
-            <h2><span>Description: {{ this.description}}</span></h2>
-            <div><span>Followers: {{this.followers}}</span></div>
+            <h2><span>Label: {{ this.label}}</span></h2>
+            <div><span>Popularity: {{this.popularity}}</span></div>
           </div>
           <div>
-            <v-btn :disabled="!category" class="ma-2" x-large icon color="primary" @click="playlist">
+            <v-btn :disabled="!category" class="ma-2" x-large icon color="primary" @click="album">
               <v-icon x-large>mdi-play-circle</v-icon>
             </v-btn>
-            <v-btn class="ma-2" x-large icon color="primary" @click="likePlaylist">
+            <v-btn class="ma-2" x-large icon color="primary" @click="likeAlbum">
               <v-icon x-large>{{ liked }}</v-icon>
             </v-btn>
           </div>
@@ -24,13 +24,10 @@
       </v-row>
       <v-divider></v-divider>
       <v-list>
-        <v-list-item link v-for="(item, index) in filteredArray" :key="index" @click="track(item.track.id)" >
-          <v-list-item-avatar v-if="item.track.album.images[0]">
-            <v-img alt="Not Found" :src="item.track.album.images[0].url"></v-img>
-          </v-list-item-avatar>
-          <v-list-item-title>{{ item.track.name }}</v-list-item-title>
+        <v-list-item link v-for="(item, index) in filteredArray" :key="index" @click="track(item.id)">
+          <v-list-item-title>{{ item.name }}</v-list-item-title>
           <v-list-item-subtitle class="text-right">
-            {{ artists(item.track.artists) }}
+            {{ artists(item.artists) }}
           </v-list-item-subtitle>
         </v-list-item>
       </v-list>
@@ -40,11 +37,11 @@
 
 <script>
 export default {
-  name: "genres",
+  name: "Albums",
   computed: {
     filteredArray() {
-      return this.playlists.items.filter(item => {
-        return item.track !== null;
+      return this.albums.items.filter(item => {
+        return item !== null;
       });
     },
     category() {
@@ -59,14 +56,12 @@ export default {
       value: true,
       image: '',
       name: '',
-      categoryID: null,
-      followers: null,
-      description: null,
+      albumID: null,
+      popularity: null,
+      album_type: null,
       liked: null,
-      owner: null,
-      playlists: {
-        limit: 25,
-        offset: 0,
+      label: null,
+      albums: {
         total: 1,
         items: []
       },
@@ -74,36 +69,33 @@ export default {
     };
   },
   methods: {
-    async getCategoryPlaylists() {
+    async getAlbum() {
       try {
-        if (this.playlists.total > this.playlists.offset) {
-          const response = await this.$axios.get(`playlists/${this.categoryID}`);
-          console.log(response);
+          const response = await this.$axios.get(`albums/${this.albumID}`);
+          console.log(response)
           this.name = response.data.name;
           this.image = response.data.images[0].url;
-          this.owner = response.data.owner.display_name;
-          this.followers = response.data.followers.total.toLocaleString();
-          this.description = response.data.description;
+          this.label = response.data.label;
+          this.popularity = response.data.popularity+'%';
+          this.album_type = response.data.album_type;
           const playlists = response.data.tracks;
-          this.playlists.total = playlists.total;
-          this.playlists.items.push(...playlists.items);
-          this.$axios.get('/playlists/'+this.categoryID+'/followers/contains?ids='
-              +this.$store.getters["spotify/getDetails"].username).then((response) => {
-              this.liked = response.data[0] ? 'mdi-heart' : 'mdi-heart-outline';
-          });
+          this.albums.total = playlists.total;
+          this.albums.items.push(...playlists.items);
+          this.$axios.get('me/albums/contains?ids=' +this.albumID)
+              .then((response) => {
+                this.liked = response.data[0] ? 'mdi-heart' : 'mdi-heart-outline';
+              });
           this.isMore = false;
-        }
       } catch (e) {
         console.log(e);
       }
     },
-    likePlaylist() {
+    likeAlbum() {
       if (this.liked === 'mdi-heart-outline')
-        this.$axios.put('playlists/' + this.categoryID + '/followers', {
-          "public": false
-        }).then(() => this.liked = 'mdi-heart').catch(() => this.liked = 'mdi-heart-outline');
+        this.$axios.put('albums?ids=' + this.albumID)
+            .then(() => this.liked = 'mdi-heart').catch(() => this.liked = 'mdi-heart-outline');
       else
-        this.$axios.delete('playlists/' + this.categoryID + '/followers')
+        this.$axios.delete('albums?ids=' + this.albumID)
             .then(() => this.liked = 'mdi-heart-outline').catch(() => this.liked = 'mdi-heart');
     },
     artists(artistList) {
@@ -111,15 +103,15 @@ export default {
         return val.name;
       }).join(', ');
     },
-    async playlist() {
+    async album() {
       try {
         await this.$store.dispatch('player/setData', {
           player: 'spotify',
-          id: this.categoryID,
-          type: 'playlist'
+          id: this.albumID,
+          type: 'album'
         });
         this.$axios.put('me/player/play?device_id='+this.$store.getters["spotify/getDeviceID"], {
-          "context_uri": "spotify:playlist:"+this.categoryID,
+          "context_uri": "spotify:album:"+this.albumID,
         }).then(() => {console.log('Playing');});
       }
       catch (e) {
@@ -134,7 +126,7 @@ export default {
           type: 'track'
         });
         this.$axios.put('me/player/play?device_id=' + this.$store.getters["spotify/getDeviceID"], {
-          "context_uri": "spotify:playlist:"+this.categoryID,
+          "context_uri": "spotify:album:"+this.albumID,
           "offset": {"uri":"spotify:track:" + clickedId},
         }).then(() => {
           console.log('Playing');
@@ -146,8 +138,8 @@ export default {
   },
   created() {
     const {id} = this.$route.params;
-    this.categoryID = id;
-    this.getCategoryPlaylists();
+    this.albumID = id;
+    this.getAlbum();
   }
 };
 </script>

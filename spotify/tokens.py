@@ -44,14 +44,15 @@ class Token:
     OAUTH_AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
 
     def __init__(self, user=None):
-        self.scope = 'streaming, user-read-email, user-read-private, user-top-read, user-modify-playback-state'
+        self.scope = 'streaming, user-read-email, user-read-private, user-top-read, user-modify-playback-state, ' \
+                     'user-read-playback-state, playlist-read-collaborative, playlist-modify-public, ' \
+                     'playlist-read-private, playlist-modify-private, user-library-modify, user-library-read'
         self.token = None
         self.token_info = None
         self.code = None
         self.user = user
 
     def prompt_for_user_token(self):
-        self.token_info = self.get_cached_token()
         if not self.token_info:
             auth_url = self.get_authorize_url()
             data = {
@@ -72,20 +73,7 @@ class Token:
         urlparams = parse.urlencode(payload)
         return "%s?%s" % (self.OAUTH_AUTHORIZE_URL, urlparams)
 
-    def get_cached_token(self):
-        token_info = None
-        try:
-            if self.user.spotifydata.exists():
-                if is_token_expired(self.user.spotifydata.expires_at):
-                    token_info = self.refresh_access_token()
-        except IOError:
-            pass
-        return token_info
-
     def get_access_token(self, code=None):
-        token_info = self.get_cached_token()
-        if token_info is not None:
-            return token_info
         payload = {
             "redirect_uri": spotipy_redirect_uri,
             "code": code,

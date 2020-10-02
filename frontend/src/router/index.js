@@ -6,6 +6,7 @@ const formsView = () => import('@/views/Forms')
 const settings = () => import('@/components/Settings')
 const Landing = () => import('@/components/LandingPage')
 const playlist = () => import('@/components/Browse/playlist')
+const album = () => import('@/components/Browse/album')
 
 Vue.use(VueRouter)
 
@@ -38,17 +39,42 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: settings,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/landing',
     name: 'Landing',
-    component: Landing
+    component: Landing,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
-    path: '/genres/:id',
-    name: 'genres',
-    component: playlist
-  }
+    path: '/playlists/:id',
+    name: 'playlist',
+    component: playlist,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('@/components/search'),
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/albums/:id',
+    name: 'album',
+    component: album,
+    meta: {
+      requiresAuth: true
+    }
+  },
 ]
 
 const router = new VueRouter({

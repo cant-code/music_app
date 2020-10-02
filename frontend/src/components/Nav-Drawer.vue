@@ -18,6 +18,14 @@
           <v-list-item-title class="title">Home</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item link to="/search" active-class="primary">
+        <v-list-item-icon>
+          <v-icon dark>mdi-magnify</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title class="title">Search</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
       <v-list-item link to="/settings" active-class="primary" v-if="!showSettings">
         <v-list-item-icon>
           <v-icon dark>mdi-hammer-wrench</v-icon>
