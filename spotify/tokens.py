@@ -100,8 +100,8 @@ class Token:
                                               refresh_token=token_info['refresh_token'],
                                               expires_at=token_info['expires_at'],
                                               category=user_id.get('product'))
-        except:
-            pass
+        except Exception as e:
+            print(e)
         token_info['user'] = user_id
         token_info['status_code'] = response.status_code
         return token_info
