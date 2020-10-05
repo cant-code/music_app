@@ -198,11 +198,15 @@ export default {
       }
     },
     playerConnect() {
-      const token = this.$store.getters["spotify/getToken"];
       // eslint-disable-next-line no-undef
       this.player = new Spotify.Player({
         name: 'Music Mixin',
-        getOAuthToken: cb => {cb(token.token);}
+        getOAuthToken: cb => {
+          if(this.$store.getters["spotify/getExpiry"].expires < new Date().getTime())
+            this.$store.dispatch('spotify/refreshToken')
+                .then(() => cb(this.$store.getters["spotify/getToken"].token));
+          else cb(this.$store.getters["spotify/getToken"].token);
+        }
       });
       this.player.addListener('authentication_error', () => {
         this.playerConnect();
