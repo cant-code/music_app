@@ -46,7 +46,13 @@
                 </v-list-item-icon>
               </v-list>
             </v-col>
-            <v-col cols=4 class="py-0 text-right">
+            <v-col cols=4 class="py-0 d-flex justify-space-between">
+              <v-btn icon>
+                <v-icon>mdi-repeat</v-icon>
+              </v-btn>
+              <v-btn icon>
+                <v-icon>mdi-shuffle-variant</v-icon>
+              </v-btn>
               <v-menu top offset-y :min-width="100" nudge-left="30">
                 <template #activator="{ on, attrs }">
                   <v-btn icon @click="show=!show" v-bind="attrs" v-on="on" class="mx-3">
