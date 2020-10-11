@@ -3,7 +3,7 @@
     <v-row justify="center" align="center">
       <v-col cols="10" sm="8" md="6" lg="5">
         <v-card elevation="24" class="pb-12 px-12 pt-6" light>
-          <h1 class="text-h1 text-center mb-3">Sign In</h1>
+          <v-img :src="image" class="mb-8 mx-auto" :aspect-ratio="1" width="60%"/>
           <v-form ref="form">
             <v-text-field label="Username" :rules="[rules.required]" :outlined=true v-model="name"
                           :rounded=true :clearable=true prepend-inner-icon="mdi-account-music"/>
@@ -42,7 +42,8 @@ export default {
     },
     password: '',
     show: false,
-    message: null
+    message: null,
+    image: require('@/assets/LOGO-resize.png'),
   }),
   methods: {
     async validate(event) {

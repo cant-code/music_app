@@ -3,7 +3,7 @@
     <v-row justify="center" align="center">
       <v-col cols="10" sm="8" md="6" lg="5">
         <v-card elevation="12" class="pb-12 px-12 pt-6" light>
-          <h1 class="text-h1 text-center mb-3">Sign Up</h1>
+          <v-img :src="image" class="mb-8 mx-auto" :aspect-ratio="1" width="60%"/>
           <v-form ref="form">
             <v-text-field :rules="[rules.required, rules.nameRule]" label="Username" :outlined=true v-model="name"
                           :rounded=true :clearable=true prepend-inner-icon="mdi-account-music"/>
@@ -57,7 +57,8 @@ export default {
     email: '',
     show: false,
     show2: false,
-    message: null
+    message: null,
+    image: require('@/assets/LOGO-resize.png'),
   }),
   computed: {
     passComp() { return () => (this.password === this.password2) || 'Password doesnt match'; }

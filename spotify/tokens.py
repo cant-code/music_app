@@ -95,12 +95,11 @@ class Token:
         token_info = self._add_custom_values_to_token_info(token_info)
         user_id = get_user(token_info)
         try:
-            obj, created = SpotifyData.objects.get_or_create(user=self.user, sp_name=user_id.get('id'),
+            SpotifyData.objects.get_or_create(user=self.user, sp_name=user_id.get('id'),
                                               access_token=token_info['access_token'],
                                               refresh_token=token_info['refresh_token'],
                                               expires_at=token_info['expires_at'],
                                               category=user_id.get('product'))
-            print(obj, created)
         except Exception as e:
             print(e)
         token_info['user'] = user_id
