@@ -5,7 +5,7 @@
         <v-icon dark>mdi-account</v-icon>
       </v-list-item-icon>
       <v-list-item-content>
-        <v-list-item-title class="title">Hello, {{getUser}}</v-list-item-title>
+        <v-list-item-title class="title">Hello {{getUser}}</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <v-divider></v-divider>

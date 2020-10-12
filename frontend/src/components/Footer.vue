@@ -47,10 +47,11 @@
               </v-list>
             </v-col>
             <v-col cols=4 class="py-0 d-flex justify-space-between">
-              <v-btn icon>
-                <v-icon>mdi-repeat</v-icon>
+              <v-btn icon @click="repeat" :disabled="!category"
+                     :color="this.repeat_status !== 'off' ? 'primary' : 'white'">
+                <v-icon>{{ repeatIcon }}</v-icon>
               </v-btn>
-              <v-btn icon>
+              <v-btn icon @click="shuffle" :disabled="!category" :color="this.shuffled ? 'primary' : 'white'">
                 <v-icon>mdi-shuffle-variant</v-icon>
               </v-btn>
               <v-menu top offset-y :min-width="100" nudge-left="30">
@@ -113,6 +114,8 @@ export default {
       },
       devices: {'data': null},
       player: null,
+      shuffled: false,
+      repeat_status: 'off',
     }
   },
   watch: {
@@ -128,6 +131,11 @@ export default {
     category() {
       return this.$store.getters["spotify/getCategory"] === "premium";
     },
+    repeatIcon() {
+      if(this.repeat_status === 'off') return 'mdi-repeat-off';
+      else if(this.repeat_status === 'track') return 'mdi-repeat-once';
+      else return 'mdi-repeat';
+    }
   },
   mounted() {
     if(this.$store.getters["spotify/getDetails"]) {
@@ -146,6 +154,20 @@ export default {
     this.player.disconnect();
   },
   methods: {
+    getStatus() {
+      if(this.repeat_status === 'off') return 'track';
+      else if(this.repeat_status === 'track') return 'context';
+      else return 'off';
+    },
+    repeat() {
+      let repeatType = this.getStatus();
+      this.$axios.put('me/player/repeat?state=' + repeatType)
+      .then(() => this.repeat_status = this.getStatus());
+    },
+    shuffle() {
+      this.$axios.put('me/player/shuffle?state=' + (this.shuffled ? 'false' : 'true'))
+      .then(() => this.shuffled = !this.shuffled);
+    },
     transferPlayback(id, active) {
       if((id === this.$store.getters["spotify/getDeviceID"]) && active) return
       this.$axios.put('me/player', {
@@ -240,7 +262,10 @@ export default {
           this.startBuffer();
           this.$axios.get('me/tracks/contains?ids='+this.songInfo.id).then((response) => {
             this.songInfo.liked = response.data[0] ? 'mdi-heart' : 'mdi-heart-outline';
-          })
+          });
+          this.$axios.get('me/player/currently-playing').then((res) => {
+            this.songInfo.duration = res.data.item.duration_ms;
+          });
         }
         this.play = paused;
       });
