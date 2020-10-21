@@ -1,5 +1,10 @@
 <template>
   <v-navigation-drawer permanent :expand-on-hover=true app>
+    <v-list-item class="pl-2">
+      <v-list-item-avatar class="mx-auto">
+        <v-img :src="image"/>
+      </v-list-item-avatar>
+    </v-list-item>
     <v-list-item>
       <v-list-item-icon>
         <v-icon dark>mdi-account</v-icon>
@@ -48,6 +53,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      image: require('@/assets/LOGO-resize.png'),
+    }
+  },
   methods: {
     logout() {
         this.$store.dispatch('auth/logoutUser').then(() => {this.$router.push('/login');});

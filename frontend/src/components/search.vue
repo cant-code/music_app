@@ -1,9 +1,11 @@
 <template>
   <v-container>
-    <v-text-field v-model="searchTerm" hide-details label="Search" outlined></v-text-field>
-    <v-btn @click="search" class="my-2">Search</v-btn>
+    <v-form @submit.prevent="search">
+      <v-text-field v-model="searchTerm" hide-details label="Search" outlined></v-text-field>
+      <v-btn type="submit" @click="search" class="my-2">Search</v-btn>
+    </v-form>
     <hr/>
-    <section>
+    <section v-if="searched">
       <h2>Albums</h2>
       <v-sheet class="mx-auto" elevation="8">
         <v-slide-group class="pa-4" v-if="albums.total > 0">
@@ -19,7 +21,7 @@
         <v-alert v-else type="error">No Results found</v-alert>
       </v-sheet>
     </section>
-    <section>
+    <section v-if="searched">
       <h2>Tracks</h2>
       <v-sheet class="mx-auto" elevation="8">
         <v-slide-group class="pa-4" v-if="tracks.total > 0">
@@ -35,7 +37,7 @@
         <v-alert v-else type="error">No Results found</v-alert>
       </v-sheet>
     </section>
-    <section>
+    <section v-if="searched">
       <h2>Playlists</h2>
       <v-sheet class="mx-auto" elevation="8">
         <v-slide-group class="pa-4" v-if="playlists.total > 0">
@@ -63,7 +65,8 @@ export default {
       albums: {},
       playlists: {},
       artists: {},
-      tracks: {}
+      tracks: {},
+      searched: false,
     }
   },
   methods: {
@@ -73,6 +76,7 @@ export default {
             this.playlists = { 'total': res.data.playlists.total, 'items': res.data.playlists.items };
             this.artists = { 'total': res.data.artists.total, 'items': res.data.artists.items };
             this.tracks = { 'total': res.data.tracks.total, 'items': res.data.tracks.items };
+            this.searched = true;
           }).catch(e => console.log(e));
     },
     async track(clickedId) {
