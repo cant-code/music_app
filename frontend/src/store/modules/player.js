@@ -1,7 +1,8 @@
 const state = {
     player: '',
     id: '',
-    type: ''
+    type: '',
+    currentlyPlaying: '',
 };
 
 const getters = {
@@ -12,6 +13,9 @@ const getters = {
             type: state.type
         }
     },
+    getCurrentlyPlaying: (state) => {
+        return state.currentlyPlaying
+    },
 };
 
 const mutations = {
@@ -20,11 +24,17 @@ const mutations = {
         state.id = data.id;
         state.type = data.type;
     },
+    SET_CURRENT(state, data) {
+        state.currentlyPlaying = data;
+    }
 };
 
 const actions = {
     setData({commit}, data){
         commit("SET_DATA", data);
+    },
+    setCurrentlyPlaying({commit}, data) {
+        commit('SET_CURRENT', data);
     },
 };
 

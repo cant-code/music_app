@@ -121,7 +121,7 @@ export default {
   watch: {
     value (val) {
       if ((val < this.songInfo.duration) && (!this.play)) return;
-      else if(val> this.songInfo.duration) {
+      else if(val > this.songInfo.duration) {
         this.value = 0;
         clearInterval(this.interval);
       }
@@ -263,9 +263,13 @@ export default {
           this.$axios.get('me/tracks/contains?ids='+this.songInfo.id).then((response) => {
             this.songInfo.liked = response.data[0] ? 'mdi-heart' : 'mdi-heart-outline';
           });
-          this.$axios.get('me/player/currently-playing').then((res) => {
-            this.songInfo.duration = res.data.item.duration_ms;
+          // this.$axios.get('me/player/currently-playing').then((res) => {
+          //   this.songInfo.duration = res.data.item.duration_ms;
+          // });
+          this.$axios.get(`tracks/${this.songInfo.id}`).then((res) => {
+            this.songInfo.duration = res.data.duration_ms;
           });
+          this.$store.dispatch('player/setCurrentlyPlaying', current_track.id);
         }
         this.play = paused;
       });

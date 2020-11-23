@@ -7,6 +7,7 @@ const settings = () => import('@/components/Settings')
 const Landing = () => import('@/components/LandingPage')
 const playlist = () => import('@/components/Browse/playlist')
 const album = () => import('@/components/Browse/album')
+const user = () => import('@/components/User/userData')
 
 Vue.use(VueRouter)
 
@@ -71,6 +72,14 @@ const routes = [
     path: '/albums/:id',
     name: 'album',
     component: album,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/user',
+    name: 'user',
+    component: user,
     meta: {
       requiresAuth: true
     }

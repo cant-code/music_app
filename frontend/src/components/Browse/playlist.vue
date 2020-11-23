@@ -24,7 +24,8 @@
       </v-row>
       <v-divider></v-divider>
       <v-list>
-        <v-list-item link v-for="(item, index) in filteredArray" :key="index" @click="track(item.track.id)" >
+        <v-list-item link v-for="(item) in filteredArray" :key="item.track.id" color="primary"
+                     @click="track(item.track.id)" :input-value="currentlyPlaying === item.track.id">
           <v-list-item-avatar v-if="item.track.album.images[0]">
             <v-img alt="Not Found" :src="item.track.album.images[0].url"></v-img>
           </v-list-item-avatar>
@@ -49,7 +50,10 @@ export default {
     },
     category() {
       return this.$store.getters["spotify/getCategory"] === "premium";
-    }
+    },
+    currentlyPlaying() {
+      return this.$store.getters["player/getCurrentlyPlaying"];
+    },
   },
   updated() {
     this.isMore = false;
@@ -70,7 +74,7 @@ export default {
         total: 1,
         items: []
       },
-      isMore: true
+      isMore: true,
     };
   },
   methods: {
