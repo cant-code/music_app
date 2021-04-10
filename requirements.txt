@@ -4,7 +4,7 @@ Django==3.1.8
 django-allauth==0.42.0
 django-braces==1.14.0
 django-cors-headers==3.5.0
-djangorestframework==3.11.1
+djangorestframework==3.11.2
 gunicorn
 psycopg2==2.8.5
 python-dotenv==0.14.0
