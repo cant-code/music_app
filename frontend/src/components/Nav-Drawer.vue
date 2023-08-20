@@ -55,7 +55,7 @@
 export default {
   data() {
     return {
-      image: require('@/assets/LOGO-resize.png'),
+      image: '/src/assets/LOGO-resize.png',
     }
   },
   methods: {

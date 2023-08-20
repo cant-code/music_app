@@ -43,7 +43,7 @@ export default {
     password: '',
     show: false,
     message: null,
-    image: require('@/assets/LOGO-resize.png'),
+    image: '/src/assets/LOGO-resize.png',
   }),
   methods: {
     async validate(event) {

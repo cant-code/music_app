@@ -58,7 +58,7 @@ export default {
     show: false,
     show2: false,
     message: null,
-    image: require('@/assets/LOGO-resize.png'),
+    image: './src/assets/LOGO-resize.png',
   }),
   computed: {
     passComp() { return () => (this.password === this.password2) || 'Password doesnt match'; }
