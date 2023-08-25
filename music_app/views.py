@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.generic import TemplateView
 import django.middleware.csrf
 
@@ -8,5 +8,7 @@ class HomeView(TemplateView):
 
 
 def get_csrf_token(request):
-    token = django.middleware.csrf.get_token(request)
-    return JsonResponse({'token': token})
+    if request.method == 'GET':
+        token = django.middleware.csrf.get_token(request)
+        return JsonResponse({'token': token})
+    return HttpResponse(status=405)
