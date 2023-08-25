@@ -28,18 +28,18 @@
             </v-col>
             <v-col cols=4 class="pa-0">
               <v-list class="text-center">
-                <v-list-item-icon :class="{ 'mx-0': $vuetify.breakpoint.smAndDown }">
+                <v-list-item-icon :class="{ 'mx-0': $vuetify.display.smAndDown }">
                   <v-btn icon :disabled="!changeTrack.prev || !category" @click="playPrev">
                     <v-icon>mdi-rewind</v-icon>
                   </v-btn>
                 </v-list-item-icon>
-                <v-list-item-icon :class="{ 'mx-5': $vuetify.breakpoint.mdAndUp, 'mx-0': $vuetify.breakpoint.smAndDown }">
+                <v-list-item-icon :class="{ 'mx-5': $vuetify.display.mdAndUp, 'mx-0': $vuetify.display.smAndDown }">
                   <v-btn icon @click="playback" :disabled="!category">
                     <v-icon v-if=play >mdi-play</v-icon>
                     <v-icon v-else>mdi-pause</v-icon>
                   </v-btn>
                 </v-list-item-icon>
-                <v-list-item-icon :class="{ 'ml-8': $vuetify.breakpoint.mdAndUp, 'mx-0': $vuetify.breakpoint.smAndDown }">
+                <v-list-item-icon :class="{ 'ml-8': $vuetify.display.mdAndUp, 'mx-0': $vuetify.display.smAndDown }">
                   <v-btn icon :disabled="!changeTrack.next || !category" @click="playNext">
                     <v-icon>mdi-fast-forward</v-icon>
                   </v-btn>

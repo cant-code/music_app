@@ -1,7 +1,7 @@
-import Vue from 'vue'
 import store from "@/store";
-import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import { createRouter, createWebHistory } from "vue-router";
+
 const formsView = () => import('@/views/Forms')
 const settings = () => import('@/components/Settings')
 const Landing = () => import('@/components/LandingPage')
@@ -9,7 +9,6 @@ const playlist = () => import('@/components/Browse/playlist')
 const album = () => import('@/components/Browse/album')
 const user = () => import('@/components/User/userData')
 
-Vue.use(VueRouter)
 
 const routes = [
   {
@@ -86,8 +85,8 @@ const routes = [
   },
 ]
 
-const router = new VueRouter({
-  mode: 'history',
+const router = createRouter({
+  history: createWebHistory(),
   base: import.meta.env.BASE_URL,
   routes
 });
